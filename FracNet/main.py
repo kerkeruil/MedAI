@@ -1,5 +1,6 @@
 from functools import partial
 
+from torch import nn
 from torch import save
 
 from fastai.basic_train import Learner
