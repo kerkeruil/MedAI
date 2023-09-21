@@ -6,7 +6,7 @@ from matplotlib import pyplot as plt
 from skimage.measure import label, regionprops
 from tqdm import tqdm
 
-from .nii_dataset import NiiDataset
+from nii_dataset import NiiDataset
 
 __all__ = ["froc", "plot_froc", "evaluate"]
 

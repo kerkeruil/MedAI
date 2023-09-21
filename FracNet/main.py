@@ -59,7 +59,7 @@ def main(args):
     )
 
     learn.fit_one_cycle(
-        200,
+        10,
         1e-1,
         pct_start=0,
         div_factor=1000,
