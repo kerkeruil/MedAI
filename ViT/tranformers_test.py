@@ -5,7 +5,7 @@ import torch
 import numpy as np
 from datasets import load_metric
 
-from dataloader_test import get_data
+from dataloader_beans import get_data
 
 from transformers import ViTForImageClassification
 from transformers import TrainingArguments
