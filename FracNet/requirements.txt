@@ -1,0 +1,10 @@
+SimpleITK
+fastai==1.0.59
+fastprogress
+matplotlib
+nibabel
+numpy>=1.18.5
+pandas>=0.25.3
+scikit-image
+torch
+tqdm
