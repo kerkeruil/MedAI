@@ -1,5 +1,5 @@
 """
-Usage: pyhton3 preprocessing_2D.py --gt_dir "path to ground truth files" --label_dir "path to ground truth labels"
+Usage: python3 preprocessing_2D.py --gt_dir "path to ground truth files" --label_dir "path to ground truth labels"
 """
 
 import os
@@ -25,7 +25,7 @@ def preprocess(gt_dir, label_dir):
 
         # e.x. ribfrac421
         name = data[image][1]
-        print(name)
+        print("Collecting data from:", name)
         path_name = "Dataset/" + name
         if not os.path.exists(path_name):
             os.makedirs(path_name)
@@ -34,11 +34,11 @@ def preprocess(gt_dir, label_dir):
 
 
         for i, fracs in enumerate(fractures):
-            print(fracs.label)
-            print(fracs.coords)
-            print("centroid",fracs.centroid)
+            # print(fracs.label)
+            # print(fracs.coords)
+            # print("centroid",fracs.centroid)
             centroid = np.int64(np.round(fracs.centroid))
-            print("centroid round",centroid)
+            # print("centroid round",centroid)
             path = path_name + "/slice_" + str(i)
 
             # name_frac = name + "-" + str(i)
