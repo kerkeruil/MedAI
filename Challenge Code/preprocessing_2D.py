@@ -1,3 +1,7 @@
+"""
+Usage: pyhton3 preprocessing_2D.py --gt_dir "path to ground truth files" --label_dir "path to ground truth labels"
+"""
+
 import os
 import sys
 import numpy as np
