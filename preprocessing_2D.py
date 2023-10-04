@@ -15,8 +15,8 @@ import random
 from challenge_code.nii_dataset import NiiDataset
 from ViT.dataloader_ribs import find_path_to_folder
 def preprocess():
-    gt_dir = find_path_to_folder('MedAI_oefenpakket\images')
-    label_dir = find_path_to_folder('MedAI_oefenpakket\labels')
+    gt_dir = find_path_to_folder('MedAI_oefenpakket/images')
+    label_dir = find_path_to_folder('MedAI_oefenpakket/labels')
     data = NiiDataset(gt_dir)
     labels = NiiDataset(label_dir)
     if not os.path.exists("dataset"):
@@ -77,15 +77,18 @@ def preprocess():
                 neg_x_start = np.shape(test_data)[0] - x_start-96
                 neg_x_end = np.shape(test_data)[0] -x_end+96
                 negative_sample = test_data[neg_x_start:neg_x_end, y_start:y_end, i]
-                negative_sample_label = label_img[neg_x_start:neg_x_end-32, y_start:y_end-32, i]
+                negative_sample_label = label_img[neg_x_start:neg_x_end, y_start:y_end, i]
+                neg_mirror_start = np.shape(negative_sample)[0] - 64 - x_rand
+                negative_sample_patch = negative_sample[neg_mirror_start: neg_mirror_start+64, y_rand: y_rand+64]
+                negative_sample_patch_label = negative_sample_label[neg_mirror_start: neg_mirror_start+64, y_rand: y_rand+64]
 
                 # Save the negative slices
                 path_neg = path + "/neg/"
 
 
-                if not(np.mean(negative_sample_label) > 0.0):
-                    np.save(path_neg + "neg-slice-" + str(slice),negative_sample)
-                    np.save(path_neg + "neg-slice-" + str(slice)+"-label",negative_sample_label)
+                if not(np.mean(negative_sample_patch_label) > 0.0):
+                    np.save(path_neg + "neg-slice-" + str(slice),negative_sample_patch)
+                    # np.save(path_neg + "neg-slice-" + str(slice)+"-label",negative_sample_label)
                 else:
                     print(negative_sample)
                 # show_slices(np.array([random_patch,random_patch_label]))
