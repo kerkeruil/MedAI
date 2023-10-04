@@ -1,9 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-# from pathlib import Path
+from pathlib import Path
 import os
-import pathlib
+# import pathlib
 
 def show_slices(slices):
     """ Function to display row of image slices """
@@ -39,12 +39,12 @@ def find_path_to_folder(tag):
     Find folder that contains given tag.
     Returns the local path to this folder.
     """
+    tag = str(Path(tag))
     workdir = os.getcwd()
-    print(f'Looking for {tag} in: {workdir}')
+    print(f'\nLooking for {tag} in: {workdir}')
     n = len(tag)
     found = False
     for (dir_path, dir_names, file_names) in os.walk(workdir , topdown=True):
-    #   print(dir_path[-n:])
       if tag == dir_path[-n:]:
         print(f'Found {dir_path}\n')
         found = dir_path
