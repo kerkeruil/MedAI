@@ -13,8 +13,10 @@ import skimage
 import random
 
 from challenge_code.nii_dataset import NiiDataset
-
-def preprocess(gt_dir, label_dir):
+from ViT.dataloader_ribs import find_path_to_folder
+def preprocess():
+    gt_dir = find_path_to_folder('MedAI_oefenpakket\images')
+    label_dir = find_path_to_folder('MedAI_oefenpakket\labels')
     data = NiiDataset(gt_dir)
     labels = NiiDataset(label_dir)
     if not os.path.exists("dataset"):
@@ -141,4 +143,5 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    preprocess(args.gt_dir, args.label_dir)
+    # preprocess(args.gt_dir, args.label_dir)
+    preprocess()
