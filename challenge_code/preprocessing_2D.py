@@ -39,7 +39,7 @@ def preprocess(gt_dir, label_dir):
             # print("centroid",fracs.centroid)
             centroid = np.int64(np.round(fracs.centroid))
             # print("centroid round",centroid)
-            path = path_name + "/slice_" + str(i)
+            path = path_name + "/frac_" + str(i)
 
             # name_frac = name + "-" + str(i)
             # path = "dataset/" + str(name_frac)
