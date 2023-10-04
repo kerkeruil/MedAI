@@ -17,8 +17,8 @@ from nii_dataset import NiiDataset
 def preprocess(gt_dir, label_dir):
     data = NiiDataset(gt_dir)
     labels = NiiDataset(label_dir)
-    if not os.path.exists("Dataset"):
-        os.makedirs("Dataset")
+    if not os.path.exists("dataset"):
+        os.makedirs("dataset")
 
     for image in range(len(data)):
         test_data = data[image][0]
@@ -26,7 +26,7 @@ def preprocess(gt_dir, label_dir):
         # e.x. ribfrac421
         name = data[image][1]
         print("Collecting data from:", name)
-        path_name = "Dataset/" + name
+        path_name = "dataset/" + name
         if not os.path.exists(path_name):
             os.makedirs(path_name)
         label_img = labels[image][0]
@@ -42,7 +42,7 @@ def preprocess(gt_dir, label_dir):
             path = path_name + "/slice_" + str(i)
 
             # name_frac = name + "-" + str(i)
-            # path = "Dataset/" + str(name_frac)
+            # path = "dataset/" + str(name_frac)
             if not os.path.exists(path):
                 os.makedirs(path)
                 os.makedirs(path +"/pos")
