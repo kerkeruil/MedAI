@@ -12,7 +12,7 @@ from tqdm import tqdm
 import skimage
 import random
 
-from nii_dataset import NiiDataset
+from challenge_code.nii_dataset import NiiDataset
 
 def preprocess(gt_dir, label_dir):
     data = NiiDataset(gt_dir)
