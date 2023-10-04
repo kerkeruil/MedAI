@@ -135,13 +135,13 @@ def show_slices(slices):
     plt.show()
 
 if __name__ == "__main__":
-    import argparse
+    # import argparse
 
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--gt_dir", required=True)
-    parser.add_argument("--label_dir", required=True)
+    # parser = argparse.ArgumentParser()
+    # parser.add_argument("--gt_dir", required=True)
+    # parser.add_argument("--label_dir", required=True)
 
-    args = parser.parse_args()
+    # args = parser.parse_args()
 
     # preprocess(args.gt_dir, args.label_dir)
     preprocess()
