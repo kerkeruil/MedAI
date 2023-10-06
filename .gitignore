@@ -1,5 +1,11 @@
 DATA_FULL/
 MedAI_oefenpakket/
 dataset/
+ViT/__pycache__/
 raw_data/
-challenge_code/__pycache__
+challenge_code/__pycache__/
+ViT/test.py
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]

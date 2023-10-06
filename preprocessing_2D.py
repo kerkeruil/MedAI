@@ -15,8 +15,8 @@ import random
 from challenge_code.nii_dataset import NiiDataset
 from ViT.dataloader_ribs import find_path_to_folder
 def preprocess():
-    gt_dir = find_path_to_folder('MedAI_oefenpakket\images')
-    label_dir = find_path_to_folder('MedAI_oefenpakket\labels')
+    gt_dir = find_path_to_folder('MedAI_oefenpakket/images')
+    label_dir = find_path_to_folder('MedAI_oefenpakket/labels')
     data = NiiDataset(gt_dir)
     labels = NiiDataset(label_dir)
     if not os.path.exists("dataset"):
@@ -47,7 +47,8 @@ def preprocess():
             # path = "dataset/" + str(name_frac)
             if not os.path.exists(path):
                 os.makedirs(path)
-                os.makedirs(path +"/pos")
+                os.makedirs(path +"/pos_image")
+                os.makedirs(path +"/pos_label")
                 os.makedirs(path +"/neg")
 
             # Create the patch edges, of size 96x96 because of centroid we want to add 48 to each side of the centroid
@@ -69,23 +70,25 @@ def preprocess():
                 patch_label = label_img[x_start:x_end, y_start:y_end,i]
                 pos_random_patch = patch[x_rand: x_rand+64, y_rand: y_rand+64]
                 pos_random_patch_label = patch_label[x_rand: x_rand+64, y_rand: y_rand+64]
-                path_pos = path +"/pos/"
-                np.save(path_pos + "pos-slice-" + str(slice),pos_random_patch)
-                np.save(path_pos + "pos-slice-" + str(slice)+"-label",pos_random_patch_label)
+                np.save(path +"/pos_image/" + "pos-slice-" + str(slice),pos_random_patch)
+                np.save(path +"/pos_label/" + "pos-slice-" + str(slice)+"-label",pos_random_patch_label)
 
                 # negative slices
                 neg_x_start = np.shape(test_data)[0] - x_start-96
                 neg_x_end = np.shape(test_data)[0] -x_end+96
                 negative_sample = test_data[neg_x_start:neg_x_end, y_start:y_end, i]
-                negative_sample_label = label_img[neg_x_start:neg_x_end-32, y_start:y_end-32, i]
+                negative_sample_label = label_img[neg_x_start:neg_x_end, y_start:y_end, i]
+                neg_mirror_start = np.shape(negative_sample)[0] - 64 - x_rand
+                negative_sample_patch = negative_sample[neg_mirror_start: neg_mirror_start+64, y_rand: y_rand+64]
+                negative_sample_patch_label = negative_sample_label[neg_mirror_start: neg_mirror_start+64, y_rand: y_rand+64]
 
                 # Save the negative slices
                 path_neg = path + "/neg/"
 
 
-                if not(np.mean(negative_sample_label) > 0.0):
-                    np.save(path_neg + "neg-slice-" + str(slice),negative_sample)
-                    np.save(path_neg + "neg-slice-" + str(slice)+"-label",negative_sample_label)
+                if not(np.mean(negative_sample_patch_label) > 0.0):
+                    np.save(path_neg + "neg-slice-" + str(slice),negative_sample_patch)
+                    # np.save(path_neg + "neg-slice-" + str(slice)+"-label",negative_sample_label)
                 else:
                     print(negative_sample)
                 # show_slices(np.array([random_patch,random_patch_label]))
@@ -126,22 +129,5 @@ def create_patches(arr, overlap_bool=False):
     patches_array = np.array(patches)
     return patches_array
 
-def show_slices(slices):
-    """ Function to display row of image slices """
-    fig, axes = plt.subplots(1, len(slices))
-    for i, slice in enumerate(slices):
-        axes[i].imshow(slice.T, cmap="gray", origin="lower")
-       
-    plt.show()
-
 if __name__ == "__main__":
-    # import argparse
-
-    # parser = argparse.ArgumentParser()
-    # parser.add_argument("--gt_dir", required=True)
-    # parser.add_argument("--label_dir", required=True)
-
-    # args = parser.parse_args()
-
-    # preprocess(args.gt_dir, args.label_dir)
     preprocess()

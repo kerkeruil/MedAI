@@ -12,13 +12,13 @@ from tqdm import tqdm
 import skimage
 import random
 
-from nii_dataset import NiiDataset
+from challenge_code.nii_dataset import NiiDataset
 
 def preprocess(gt_dir, label_dir):
     data = NiiDataset(gt_dir)
     labels = NiiDataset(label_dir)
-    if not os.path.exists("Dataset"):
-        os.makedirs("Dataset")
+    if not os.path.exists("dataset_3D"):
+        os.makedirs("dataset_3D")
 
     for image in range(len(data)):
         test_data = data[image][0]
@@ -26,7 +26,7 @@ def preprocess(gt_dir, label_dir):
         # e.x. ribfrac421
         name = data[image][1]
         print("Collecting data from:", name)
-        path_name = "Dataset/" + name
+        path_name = "dataset_3D/" + name
         if not os.path.exists(path_name):
             os.makedirs(path_name)
         label_img = labels[image][0]
@@ -39,14 +39,14 @@ def preprocess(gt_dir, label_dir):
             # print("centroid",fracs.centroid)
             centroid = np.int64(np.round(fracs.centroid))
             # print("centroid round",centroid)
-            path = path_name + "/slice_" + str(i)
+            path = path_name + "/frac_" + str(i)
 
             # name_frac = name + "-" + str(i)
-            # path = "Dataset/" + str(name_frac)
-            if not os.path.exists(path):
-                os.makedirs(path)
-                os.makedirs(path +"/pos")
-                os.makedirs(path +"/neg")
+            # path = "dataset/" + str(name_frac)
+            # if not os.path.exists(path):
+            #     os.makedirs(path)
+            #     os.makedirs(path +"/pos")
+            #     os.makedirs(path +"/neg")
 
             # Create the patch edges, of size 96x96 because of centroid we want to add 48 to each side of the centroid
             mid_difference = np.int64(96 / 2)
@@ -59,37 +59,34 @@ def preprocess(gt_dir, label_dir):
             z_start = centroid[2] - mid_difference
             z_end = centroid[2] + mid_difference
 
-            # Create positive and negative slices
-            for slice, i in enumerate(range(z_min, z_max)):
-                x_rand = random.randint(0,32)
-                y_rand = random.randint(0,32)
-                patch = test_data[x_start:x_end, y_start:y_end, i]
-                patch_label = label_img[x_start:x_end, y_start:y_end,i]
-                pos_random_patch = patch[x_rand: x_rand+64, y_rand: y_rand+64]
-                pos_random_patch_label = patch_label[x_rand: x_rand+64, y_rand: y_rand+64]
-                path_pos = path +"/pos/"
-                np.save(path_pos + "pos-slice-" + str(slice),pos_random_patch)
-                np.save(path_pos + "pos-slice-" + str(slice)+"-label",pos_random_patch_label)
 
-                # negative slices
-                neg_x_start = np.shape(test_data)[0] - x_start-96
-                neg_x_end = np.shape(test_data)[0] -x_end+96
-                negative_sample = test_data[neg_x_start:neg_x_end, y_start:y_end, i]
-                negative_sample_label = label_img[neg_x_start:neg_x_end-32, y_start:y_end-32, i]
+            full_fracture = test_data[x_start:x_end, y_start:y_end, z_start:z_end]
+            full_fracture_label = label_img[x_start:x_end, y_start:y_end, z_start:z_end]
+            x_rand = random.randint(0,32)
+            y_rand = random.randint(0,32)
+            z_rand = random.randint(0,32)
 
-                # Save the negative slices
-                path_neg = path + "/neg/"
+            pos_random_patch = full_fracture[x_rand: x_rand+64, y_rand: y_rand+64, z_rand: z_rand+64]
+            pos_random_patch_label = full_fracture_label[x_rand: x_rand+64, y_rand: y_rand+64, z_rand: z_rand+64]
+            np.save(path + "_pos",pos_random_patch)
+            np.save(path + "_pos-label",pos_random_patch_label)
 
+            # negative fracture
+            neg_x_start = np.shape(test_data)[0] - x_start-96
+            neg_x_end = neg_x_start + 96
 
-                if not(np.mean(negative_sample_label) > 0.0):
-                    np.save(path_neg + "neg-slice-" + str(slice),negative_sample)
-                    np.save(path_neg + "neg-slice-" + str(slice)+"-label",negative_sample_label)
-                else:
-                    print(negative_sample)
-                # show_slices(np.array([random_patch,random_patch_label]))
-    
+            # neg_x_end = np.shape(test_data)[0] -x_end+96
+            negative_sample = test_data[neg_x_start:neg_x_end, y_start:y_end, z_start:z_end] #96x96
+            negative_sample_label = label_img[neg_x_start:neg_x_end, y_start:y_end, z_start:z_end] #96x96
+            neg_mirror_start = np.shape(negative_sample)[0] - 64 - x_rand
+            negative_sample_patch = negative_sample[neg_mirror_start: neg_mirror_start+64, y_rand: y_rand+64, z_rand:z_rand+64]
+            negative_sample_patch_label = negative_sample_label[neg_mirror_start: neg_mirror_start+64, y_rand: y_rand+64,z_rand:z_rand+64]
 
-
+            if not(np.mean(negative_sample_patch_label) > 0.0):
+                np.save(path + "_neg",negative_sample_patch)
+                # np.save(path_neg + "neg-slice-" + str(slice)+"-label",negative_sample_label)
+            else:
+                print(negative_sample)
 
     # slice_0 = test_data[260, :, :]
     # slice_1 = test_data[:, 200, :]
@@ -137,7 +134,6 @@ def show_slices(slices):
 
 if __name__ == "__main__":
     import argparse
-
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--gt_dir", required=True)
