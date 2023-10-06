@@ -7,9 +7,10 @@ import os
 
 def show_slices(slices):
     """ Function to display row of image slices """
-    fig, axes = plt.subplots(1, len(slices))
-    for i, slice in enumerate(slices):
-        axes[i].imshow(slice.T, cmap="gray", origin="lower")
+    n_slices = slices.shape[2]
+    fig, axes = plt.subplots(1, n_slices)
+    for i in range(n_slices):
+        axes[i].imshow(slices[:,:,i], cmap="gray", origin="lower")
     plt.show()
 
 
@@ -31,6 +32,14 @@ def create_slice_matrix(path_to_image, fracture, label: str):
 
 
 def readin_slices(path_to_image_folder: Path, image_inds: list = None) -> dict:
+    """
+    Creates and returns a dictionary with 3d numpy arrays of stacked images.
+    Works as follows:
+
+    dict["Index of image"]["Index of fracture]["neg/pos_image/pos_label"]
+    
+    Where the 3e dim (e.g: im[:,:,x]) is equal to the index of the slices.
+    """
     # Locate image folder containing the fractures.
     all_paths = os.listdir(path_to_image_folder)
     filenames = [(p,ind) for p in all_paths for ind in image_inds if ind in p]
@@ -48,14 +57,8 @@ def readin_slices(path_to_image_folder: Path, image_inds: list = None) -> dict:
             pos_label_matrix = create_slice_matrix(path_to_image, f, 'pos_label')
 
             d[ind][f] = {'neg': neg_matrix, 'pos_image': pos_image_matrix, 'pos_label': pos_label_matrix}
-            break
     
-    print(d['422'].keys())
-    print(d['422']['frac_0'].keys())
-    print(d['422']['frac_0']['neg'].shape)
-    print(d['422']['frac_0']['pos_image'].shape)
-    print(d['422']['frac_0']['pos_label'].shape)
-
+    return d
 
 
 def find_path_to_folder(tag):
@@ -78,15 +81,12 @@ def find_path_to_folder(tag):
         raise Exception("Couldn't find the folder")
     return Path(found)
 
-
     
 
 if __name__ == "__main__":
     path_to_image = find_path_to_folder('dataset')
-    readin_slices(path_to_image, ['422'])
-    # readin_slices(path_to_image, ['422', '423'])
-
-    # im = [np.load('ViT/test.npy')]
-    # im.append(np.load('ViT/test2.npy'))
-    # show_slices(im)
+    # d = readin_slices(path_to_image, ['422'])
+    d = readin_slices(path_to_image, ['422', '423'])
+    slices = d['422']['frac_0']['neg'][:,:,:3]
+    show_slices(slices)
 

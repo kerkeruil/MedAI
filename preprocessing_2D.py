@@ -129,13 +129,5 @@ def create_patches(arr, overlap_bool=False):
     patches_array = np.array(patches)
     return patches_array
 
-def show_slices(slices):
-    """ Function to display row of image slices """
-    fig, axes = plt.subplots(1, len(slices))
-    for i, slice in enumerate(slices):
-        axes[i].imshow(slice.T, cmap="gray", origin="lower")
-       
-    plt.show()
-
 if __name__ == "__main__":
     preprocess()
