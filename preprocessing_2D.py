@@ -47,7 +47,8 @@ def preprocess():
             # path = "dataset/" + str(name_frac)
             if not os.path.exists(path):
                 os.makedirs(path)
-                os.makedirs(path +"/pos")
+                os.makedirs(path +"/pos_image")
+                os.makedirs(path +"/pos_label")
                 os.makedirs(path +"/neg")
 
             # Create the patch edges, of size 96x96 because of centroid we want to add 48 to each side of the centroid
@@ -69,9 +70,8 @@ def preprocess():
                 patch_label = label_img[x_start:x_end, y_start:y_end,i]
                 pos_random_patch = patch[x_rand: x_rand+64, y_rand: y_rand+64]
                 pos_random_patch_label = patch_label[x_rand: x_rand+64, y_rand: y_rand+64]
-                path_pos = path +"/pos/"
-                np.save(path_pos + "pos-slice-" + str(slice),pos_random_patch)
-                np.save(path_pos + "pos-slice-" + str(slice)+"-label",pos_random_patch_label)
+                np.save(path +"/pos_image/" + "pos-slice-" + str(slice),pos_random_patch)
+                np.save(path +"/pos_label/" + "pos-slice-" + str(slice)+"-label",pos_random_patch_label)
 
                 # negative slices
                 neg_x_start = np.shape(test_data)[0] - x_start-96
@@ -138,13 +138,4 @@ def show_slices(slices):
     plt.show()
 
 if __name__ == "__main__":
-    # import argparse
-
-    # parser = argparse.ArgumentParser()
-    # parser.add_argument("--gt_dir", required=True)
-    # parser.add_argument("--label_dir", required=True)
-
-    # args = parser.parse_args()
-
-    # preprocess(args.gt_dir, args.label_dir)
     preprocess()
