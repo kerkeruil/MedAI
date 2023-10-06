@@ -1,0 +1,90 @@
+# !/bin/sh
+
+# run from MedAI folder
+# Get raw data
+
+# Run your script from the MedAI folder
+cd $HOME/MedAI
+
+# Create folders
+mkdir -p raw_data/train/images
+mkdir -p raw_data/train/labels
+
+# Train part 1: 300 chest CT (images 36.6GB)
+wget -O raw_data/train/ribfrac-train-images-1.zip https://zenodo.org/record/3893508/files/ribfrac-train-images-1.zip
+wget -O raw_data/train/ribfrac-train-labels-1.zip https://zenodo.org/record/3893508/files/ribfrac-train-labels-1.zip 
+wget -O raw_data/train/ribfrac-train-info-1.csv https://zenodo.org/record/3893508/files/ribfrac-train-info-1.csv
+
+# Unzip the zip files, move and remove old folders
+unzip raw_data/train/ribfrac-train-images-1.zip -d raw_data/train/ && mv raw_data/train/Part1/* raw_data/train/images
+rm -r raw_data/train/Part1
+
+unzip raw_data/train/ribfrac-train-labels-1.zip -d raw_data/train/ && mv raw_data/train/Part1/* raw_data/train/labels
+rm -r raw_data/train/Part1
+
+# # Clean up zip files
+rm raw_data/train/ribfrac-train-images-1.zip
+rm raw_data/train/ribfrac-train-labels-1.zip
+
+# Train part 2: 120 chest CT (images 14.6GB)
+wget -O raw_data/train/ribfrac-train-images-2.zip https://zenodo.org/record/3893498/files/ribfrac-train-images-2.zip
+wget -O raw_data/train/ribfrac-train-labels-2.zip https://zenodo.org/record/3893498/files/ribfrac-train-labels-2.zip 
+wget -O raw_data/train/ribfrac-train-info-2.csv https://zenodo.org/record/3893498/files/ribfrac-train-info-2.csv
+
+# Unzip the zip files, move and remove old folders
+unzip raw_data/train/ribfrac-train-images-2.zip -d raw_data/train/ && mv raw_data/train/Part2/* raw_data/train/images
+rm -r raw_data/train/Part2
+
+unzip raw_data/train/ribfrac-train-labels-2.zip -d raw_data/train/ && mv raw_data/train/Part2/* raw_data/train/labels
+rm -r raw_data/train/Part2
+
+# Clean up zip files
+rm raw_data/train/ribfrac-train-images-2.zip
+rm raw_data/train/ribfrac-train-labels-2.zip 
+
+# Combine the two train CSV files
+tail -n +2 raw_data/train/ribfrac-train-info-2.csv >> raw_data/train/ribfrac-train-info-1.csv
+mv raw_data/train/ribfrac-train-info-1.csv raw_data/train/ribfrac-train-info.csv
+
+# Remove old CSV file
+rm raw_data/train/ribfrac-train-info-2.csv
+
+# validation
+# Create folders
+mkdir -p raw_data/validation/images
+mkdir -p raw_data/validation/labels
+
+# Validation: 80 CT
+wget -O raw_data/validation/ribfrac-val-images.zip https://zenodo.org/record/3893496/files/ribfrac-val-images.zip
+wget -O raw_data/validation/ribfrac-val-labels.zip https://zenodo.org/record/3893496/files/ribfrac-val-labels.zip
+wget -O raw_data/validation/ribfrac-val-info.csv https://zenodo.org/record/3893496/files/ribfrac-val-info.csv
+
+# Unzip the zip files and rename folders
+unzip raw_data/validation/ribfrac-val-images.zip -d raw_data/validation/ && mv raw_data/validation/ribfrac-val-images/* raw_data/validation/images
+unzip raw_data/validation/ribfrac-val-labels.zip -d raw_data/validation/ && mv raw_data/validation/ribfrac-val-labels/* raw_data/validation/labels
+
+# Clean up folders
+rm -r raw_data/validation/ribfrac-val-images
+rm -r raw_data/validation/ribfrac-val-labels
+
+# Clean up zip files
+rm raw_data/validation/ribfrac-val-images.zip
+rm raw_data/validation/ribfrac-val-labels.zip
+
+#test
+# Create folders
+mkdir -p raw_data/test/images
+
+# Test images: 160 CT
+wget -O raw_data/test/ribfrac-test-images.zip https://zenodo.org/record/3993380/files/ribfrac-test-images.zip
+
+# Unzip the zip files and rename folders
+unzip raw_data/test/ribfrac-test-images.zip -d raw_data/test/ && mv raw_data/test/ribfrac-test-images/* raw_data/test/images
+
+# Clean up folders
+rm -r raw_data/test/ribfrac-test-images
+
+# Clean up zip files
+rm raw_data/test/ribfrac-test-images.zip
+
+echo "Files downloaded and extracted successfully."
