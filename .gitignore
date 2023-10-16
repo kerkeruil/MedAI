@@ -4,7 +4,6 @@ MedAI_oefenpakket/
 dataset/
 ViT/__pycache__/
 ViT/mr_inspector.py
-ViT/vis_trans.py
 raw_data/
 challenge_code/__pycache__/
 ViT/test.py
