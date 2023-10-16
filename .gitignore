@@ -1,10 +1,17 @@
 DATA_FULL/
+training_set_test/
 MedAI_oefenpakket/
 dataset/
 ViT/__pycache__/
+ViT/mr_inspector.py
+ViT/vis_trans.py
 raw_data/
 challenge_code/__pycache__/
 ViT/test.py
+dataset_huggingface
+snellius_login.txt
+test.py
+ultimate_jobscribt.job
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
