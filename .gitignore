@@ -12,6 +12,7 @@ dataset_huggingface
 snellius_login.txt
 test.py
 ultimate_jobscribt.job
+vit-base-ribs/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
