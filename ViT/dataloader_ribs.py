@@ -1,6 +1,11 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from natsort import natsorted
+from datasets import load_dataset
+
+import matplotlib.image
+
+from sklearn.model_selection import train_test_split
 
 from pathlib import Path
 import os
@@ -81,12 +86,55 @@ def find_path_to_folder(tag):
         raise Exception("Couldn't find the folder")
     return Path(found)
 
+
+def write_to_file(data, name):
+    for i, im in enumerate(data):
+        filename = name + str(i) + '.jpeg'
+        matplotlib.image.imsave(filename, im)
     
+def make_dataset_huggingface_compatible(d:dict):
+    """
+    Has to be run from MEDAI home folder.
+    """
+    test_ratio = .2 # Automatically calculate other sets. (train = 1-test, val = 0.5 of test)
+    folders = ['train/', 'valid/', 'test/']
+    # Ensure folders are in place
+    folder_name = 'dataset_huggingface/'
+    if not os.path.exists(folder_name):
+        for name in folders:
+            os.makedirs(folder_name + name + 'neg/')
+            os.makedirs(folder_name + name + 'pos/')
+
+    pos_examples = []
+    neg_examples = []
+    for im in d.keys():
+        for frac in d[im].keys():
+            # Store all slices in same folder. Separate for neg and pos due to different lengths
+            for slice in range(d[im][frac]['pos_image'].shape[2]):
+                pos_examples.append(d[im][frac]['pos_image'][:,:,slice])
+
+            for slice in range(d[im][frac]['neg'].shape[2]):
+                neg_examples.append(d[im][frac]['neg'][:,:,slice])
+    
+    # Split into sets
+    for example, label in zip([pos_examples, neg_examples], ['pos/', 'neg/']):
+        train_data, test_data = train_test_split(example, test_size=test_ratio, random_state=42)
+        test_data, val_data = train_test_split(test_data, test_size=0.5, random_state=42)
+
+        # Add to folders
+        for data, f in zip([train_data, val_data, test_data], folders):
+            write_to_file(data, folder_name + f + label)
+
+def create_dataset():
+    dataset_path = Path("dataset_huggingface/")
+    ds = load_dataset("imagefolder", drop_labels=False, keep_in_memory=True, data_dir=str(dataset_path))
+    return ds
 
 if __name__ == "__main__":
     path_to_image = find_path_to_folder('dataset')
-    # d = readin_slices(path_to_image, ['422'])
-    d = readin_slices(path_to_image, ['422', '423'])
-    slices = d['422']['frac_0']['neg'][:,:,:3]
-    show_slices(slices)
+    d = readin_slices(path_to_image, ['422'])
+    # d = readin_slices(path_to_image, ['422', '423'])
+    make_dataset_huggingface_compatible(d)
+    # slices = d['422']['frac_0']['neg'][:,:,:3]
+    # show_slices(slices)
 

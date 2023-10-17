@@ -74,6 +74,8 @@ def preprocess():
                 patch_label = label_img[x_start:x_end, y_start:y_end,i]
                 pos_random_patch = patch[x_rand: x_rand+64, y_rand: y_rand+64]
                 pos_random_patch_label = patch_label[x_rand: x_rand+64, y_rand: y_rand+64]
+                pos_random_patch_label[pos_random_patch_label > 0] = 1
+
                 np.save(path_name + "/" + name + "-frac-" + str(j) + "-slice-" + str(slice)+ "-pos",pos_random_patch)
                 np.save(path_name_label + "/" + name  + "-frac-" + str(j) + "-label-slice-label" + str(slice)+"-pos",pos_random_patch_label)
 
@@ -92,6 +94,8 @@ def preprocess():
 
                 if not(np.mean(negative_sample_patch_label) > 0.0):
                     np.save(path_neg + "/" + name +"-frac-" + str(j) + "-slice-" + str(slice)+"-neg",negative_sample_patch)
+                    negative_sample_patch_label[negative_sample_patch_label > 0] = 1
+
                     np.save(path_name_label + "/" + name + "-frac-" + str(j) +"-label-slice-" + str(slice)+"-neg",negative_sample_patch)
                     # np.save(path_neg + "neg-slice-" + str(slice)+"-label",negative_sample_label)
                 else:

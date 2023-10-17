@@ -70,6 +70,7 @@ def preprocess():
                 patch_label = label_img[x_start:x_end, y_start:y_end,i]
                 pos_random_patch = patch[x_rand: x_rand+64, y_rand: y_rand+64]
                 pos_random_patch_label = patch_label[x_rand: x_rand+64, y_rand: y_rand+64]
+                pos_random_patch_label[pos_random_patch_label > 0] = 1
                 np.save(path +"/pos_image/" + "pos-slice-" + str(slice),pos_random_patch)
                 np.save(path +"/pos_label/" + "pos-slice-" + str(slice)+"-label",pos_random_patch_label)
 

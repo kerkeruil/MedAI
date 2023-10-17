@@ -1,0 +1,24 @@
+#!/bin/bash
+#SBATCH --partition=gpu
+#SBATCH --gres=gpu:1
+#SBATCH --job-name=ViT
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=3
+#SBATCH --time=50:00:00
+#SBATCH --mem=32000M
+#SBATCH --output=ViT_run_%A.out
+
+module purge
+module load 2022
+module load Anaconda3/2022.05
+
+# Your job starts in the directory where you call sbatch
+cd $HOME
+
+# Activate your environment
+source activate MAI_env
+
+# Run your code
+srun python -u preprocessing_2D.py
+srun python -u ViT/dataloader_ribs.py
+srun python -u ViT/vis_trans.py
