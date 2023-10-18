@@ -22,8 +22,8 @@ def preprocess():
     if not os.path.exists("dataset_test"):
         os.makedirs("dataset_test")
 
-    # for image in range(len(data)):
-    for image in range(2):
+    for image in range(len(data)):
+    # for image in range(2):
         test_data = data[image][0]
 
         # e.x. ribfrac421
@@ -76,8 +76,10 @@ def preprocess():
                 pos_random_patch_label = patch_label[x_rand: x_rand+64, y_rand: y_rand+64]
                 pos_random_patch_label[pos_random_patch_label > 0] = 1
 
+
                 np.save(path_name + "/" + name + "-frac-" + str(j) + "-slice-" + str(slice)+ "-pos",pos_random_patch)
-                np.save(path_name_label + "/" + name  + "-frac-" + str(j) + "-label-slice-label" + str(slice)+"-pos",pos_random_patch_label)
+                np.save(path_name_label + "/" + name + "-frac-" + str(j) + "-slice-" + str(slice)+ "-pos" + "_mask",pos_random_patch_label)
+                # np.save(path_name_label + "/" + name  + "-frac-" + str(j) + "-label-slice-label" + str(slice)+"-pos",pos_random_patch_label)
 
                 # negative slices
                 neg_x_start = np.shape(test_data)[0] - x_start-96
@@ -96,8 +98,7 @@ def preprocess():
                     np.save(path_neg + "/" + name +"-frac-" + str(j) + "-slice-" + str(slice)+"-neg",negative_sample_patch)
                     negative_sample_patch_label[negative_sample_patch_label > 0] = 1
 
-                    np.save(path_name_label + "/" + name + "-frac-" + str(j) +"-label-slice-" + str(slice)+"-neg",negative_sample_patch)
-                    # np.save(path_neg + "neg-slice-" + str(slice)+"-label",negative_sample_label)
+                    np.save(path_name_label + "/" + name + "-frac-" + str(j) +"-slice-" + str(slice)+"-neg" + "_mask", negative_sample_patch_label)
                 else:
                     print(negative_sample)
                 # show_slices(np.array([random_patch,random_patch_label]))

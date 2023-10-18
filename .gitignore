@@ -5,6 +5,8 @@ dataset/
 ViT/__pycache__/
 ViT/mr_inspector.py
 raw_data/
+wandb/
+dataset_test/
 challenge_code/__pycache__/
 ViT/test.py
 dataset_huggingface

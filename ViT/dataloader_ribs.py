@@ -73,7 +73,7 @@ def find_path_to_folder(tag):
     """
     tag = str(Path(tag))
     workdir = os.getcwd()
-    print(f'\nLooking for {tag} in: {workdir}')
+    print(f'Looking for {tag} in: {workdir}')
     n = len(tag)
     found = False
     for (dir_path, dir_names, file_names) in os.walk(workdir , topdown=True):
