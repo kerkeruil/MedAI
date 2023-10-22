@@ -14,27 +14,58 @@ import random
 
 from challenge_code.nii_dataset import NiiDataset
 from ViT.dataloader_ribs import find_path_to_folder
-def preprocess():
-    gt_dir = find_path_to_folder('MedAI_oefenpakket/images')
-    label_dir = find_path_to_folder('MedAI_oefenpakket/labels')
+def preprocess(folder="MedAI_oefenpakket", manual_testing=False):
+    # try:
+    #     gt_dir_train = find_path_to_folder("raw_data/train/images")
+    #     print(type(gt_dir))
+    #     print(str(gt_dir))
+    # except:
+    #     gt_dir = find_path_to_folder('MedAI_oefenpakket/images')
+    #     label_dir = find_path_to_folder('MedAI_oefenpakket/labels')
+    print(folder)
+    gt_dir = find_path_to_folder(folder + "/images")
+    label_dir = find_path_to_folder(folder + "/labels")
     data = NiiDataset(gt_dir)
     labels = NiiDataset(label_dir)
-    if not os.path.exists("dataset_test"):
-        os.makedirs("dataset_test")
+
+    if "train" in folder:
+        insert = "train/"
+        modulo = 6
+    elif "validation" in folder:
+        insert = "validation/"
+        modulo = 14
+    else:
+        insert = ""
+
+    if manual_testing is True:
+        if not os.path.exists("dataset_manual_test"):
+            os.makedirs("dataset_manual_test")
+        path_name = "dataset_manual_test/"+ insert + "images"
+        path_name_label = "dataset_manual_test/"+ insert + "labels"
+        path_name_test = "dataset_manual_test/test/images"
+        path_name_test_label = "dataset_manual_test/test/labels"
+        if not os.path.exists(path_name_test):
+            os.makedirs(path_name_test)
+        if not os.path.exists(path_name_test_label):
+            os.makedirs(path_name_test_label)    
+    else:
+        if not os.path.exists("dataset_model_test"):
+            os.makedirs("dataset_model_test")
+        path_name = "dataset_model_test/"+ insert + "images"
+        path_name_label = "dataset_model_test/"+ insert + "labels"
+    if not os.path.exists(path_name):
+        os.makedirs(path_name)
+    if not os.path.exists(path_name_label):
+        os.makedirs(path_name_label)
 
     for image in range(len(data)):
-    # for image in range(2):
         test_data = data[image][0]
 
         # e.x. ribfrac421
         name = data[image][1]
         print("Collecting data from:", name)
-        path_name = "dataset_test/images"
-        path_name_label = "dataset_test/labels"
-        if not os.path.exists(path_name):
-            os.makedirs(path_name)
-        if not os.path.exists(path_name_label):
-            os.makedirs(path_name_label)
+
+
         label_img = labels[image][0]
         fractures = skimage.measure.regionprops(label_img.astype('int'))
 
@@ -76,9 +107,12 @@ def preprocess():
                 pos_random_patch_label = patch_label[x_rand: x_rand+64, y_rand: y_rand+64]
                 pos_random_patch_label[pos_random_patch_label > 0] = 1
 
-
-                np.save(path_name + "/" + name + "-frac-" + str(j) + "-slice-" + str(slice)+ "-pos",pos_random_patch)
-                np.save(path_name_label + "/" + name + "-frac-" + str(j) + "-slice-" + str(slice)+ "-pos" + "_mask",pos_random_patch_label)
+                if manual_testing is True and j % modulo ==0:
+                    np.save(path_name_test + "/" + name + "-frac-" + str(j) + "-slice-" + str(slice)+ "-pos",pos_random_patch)
+                    np.save(path_name_test_label + "/" + name + "-frac-" + str(j) + "-slice-" + str(slice)+ "-pos" + "_mask",pos_random_patch_label)
+                else:
+                    np.save(path_name + "/" + name + "-frac-" + str(j) + "-slice-" + str(slice)+ "-pos",pos_random_patch)
+                    np.save(path_name_label + "/" + name + "-frac-" + str(j) + "-slice-" + str(slice)+ "-pos" + "_mask",pos_random_patch_label)
                 # np.save(path_name_label + "/" + name  + "-frac-" + str(j) + "-label-slice-label" + str(slice)+"-pos",pos_random_patch_label)
 
                 # negative slices
@@ -95,10 +129,15 @@ def preprocess():
 
 
                 if not(np.mean(negative_sample_patch_label) > 0.0):
-                    np.save(path_neg + "/" + name +"-frac-" + str(j) + "-slice-" + str(slice)+"-neg",negative_sample_patch)
-                    negative_sample_patch_label[negative_sample_patch_label > 0] = 1
-
-                    np.save(path_name_label + "/" + name + "-frac-" + str(j) +"-slice-" + str(slice)+"-neg" + "_mask", negative_sample_patch_label)
+                    if manual_testing is True and j % modulo ==0:
+                        np.save(path_name_test + "/" + name +"-frac-" + str(j) + "-slice-" + str(slice)+"-neg",negative_sample_patch)
+                        negative_sample_patch_label[negative_sample_patch_label > 0] = 1
+                        np.save(path_name_test_label + "/" + name + "-frac-" + str(j) +"-slice-" + str(slice)+"-neg" + "_mask", negative_sample_patch_label)
+                    else:
+                        np.save(path_neg + "/" + name +"-frac-" + str(j) + "-slice-" + str(slice)+"-neg",negative_sample_patch)
+                        negative_sample_patch_label[negative_sample_patch_label > 0] = 1
+                        np.save(path_name_label + "/" + name + "-frac-" + str(j) +"-slice-" + str(slice)+"-neg" + "_mask", negative_sample_patch_label)
+                    
                 else:
                     print(negative_sample)
                 # show_slices(np.array([random_patch,random_patch_label]))
@@ -140,4 +179,12 @@ def create_patches(arr, overlap_bool=False):
     return patches_array
 
 if __name__ == "__main__":
-    preprocess()
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--folder", required=False, default="MedAI_oefenpakket")
+    parser.add_argument("--manual_testing", required=True, type=bool, default=False)
+    args = parser.parse_args()
+
+
+    preprocess(args.folder, args.manual_testing)
