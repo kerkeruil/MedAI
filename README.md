@@ -8,6 +8,9 @@ Custom environment can be setup with anaconda:
 
 Data can be downloaded by running ```get_data.sh``` in ```/scripts/``` for training and validation set respectively. 
 
+Due to Snellius restrictions some package had to be installed using python scripts. Running this while in the 
+environments installs the rest of the packages.
+
 ## Preprocessing
 All 2D preprocessing is contained in ```preprocessing_2D_vanilla.py```. Running this file creates a folder called ```/dataset_model/``` which contains a folder containing ```images/``` and ```labels/```.
 

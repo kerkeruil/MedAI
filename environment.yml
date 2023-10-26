@@ -1,0 +1,11 @@
+name: MAI_env_final
+
+channels:
+  - defaults
+dependencies:
+  - numpy
+  - pandas
+  - Pillow
+  - matplotlib
+  - tensorboardX
+  - natsort
